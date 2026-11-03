@@ -1,0 +1,20 @@
+{
+  "name": "panopticode-ts",
+  "version": "0.1.0",
+  "description": "Visual explanations of TypeScript codebase health",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "panopticode-ts": "dist/cli.js" },
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "docs"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "tsc && node scripts/copy-web.mjs",
+    "check": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "demo": "npm run build && node dist/cli.js examples/demo --out reports/demo --coverage examples/demo/coverage.json --eslint examples/demo/eslint.json"
+  },
+  "dependencies": { "typescript": "~5.9.3" },
+  "devDependencies": { "@types/node": "^22.0.0" }
+}
