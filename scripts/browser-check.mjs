@@ -73,6 +73,12 @@ try {
   assert.match(await evaluate(`document.querySelector('#legend').textContent`), /75–100%/);
   await evaluate(`document.querySelector('#metric').value = 'lint'; document.querySelector('#metric').dispatchEvent(new Event('change'))`);
   assert.match(await evaluate(`document.querySelector('#legend').textContent`), /Warnings/);
+  await evaluate(`document.querySelector('#metric').value = 'nesting'; document.querySelector('#metric').dispatchEvent(new Event('change'))`);
+  assert.match(await evaluate(`document.querySelector('#legend').textContent`), /Depth 3–4/);
+  await evaluate(`document.querySelector('#metric').value = 'duplication'; document.querySelector('#metric').dispatchEvent(new Event('change'))`);
+  assert.match(await evaluate(`document.querySelector('#legend').textContent`), /25%/);
+  assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('Duplication matching blocks')`));
+  assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('No combined penalty')`));
   await evaluate(`document.querySelector('#metric').value = 'complexity'; document.querySelector('#metric').dispatchEvent(new Event('change'))`);
   await evaluate(`document.querySelector('#search').value = 'validateCheckout'; document.querySelector('#search').dispatchEvent(new Event('input')); new Promise(r => setTimeout(r, 180))`);
   assert.equal(await evaluate(`document.querySelectorAll('#inventory tr').length`), 1);
@@ -126,6 +132,13 @@ try {
       }, 50);
     })`);
     assert.equal(await evaluate(`document.querySelectorAll('#summary strong')[2].textContent`), '0');
+    assert.notEqual(await evaluate(`document.querySelectorAll('#summary strong')[3].textContent`), 'Unknown');
+    assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('coverage-command · complete')`));
+    assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('eslint · complete')`));
+    assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('jscpd · complete')`));
+    assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('knip-command · complete')`));
+    assert.ok(await evaluate(`document.querySelector('#evidence').textContent.includes('dependency-cruiser-command · complete')`));
+    assert.equal(await evaluate(`JSON.parse(document.querySelector('#report-data').textContent).analyzers.find(pass => pass.id === 'eslint').configuration.options.typed`), true);
     for (const theme of ['light', 'dark']) {
       await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }] });
       const screenshot = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });

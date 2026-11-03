@@ -56,6 +56,18 @@ function aggregateTree(node, files) {
   node.complexity = known.length ? known.reduce((maximum, unit) => Math.max(maximum, unit.complexity), 0) : null;
   aggregateCoverage(node, files);
   aggregateLint(node, files);
+  aggregateMeasurements(node, files);
+}
+
+function aggregateMeasurements(node, files) {
+  const selectedFiles = node.filePaths.map(file => files.get(file));
+  node.classes = selectedFiles.flatMap(file => (file.classes ?? []).map(value => ({ ...value, file: file.path })));
+  node.physicalLines = selectedFiles.reduce((sum, file) => sum + (file.measurements?.physicalLines ?? 0), 0);
+  const measured = selectedFiles.filter(file => file.measurements?.duplicatedLines != null);
+  node.duplicatedLines = measured.length ? measured.reduce((sum, file) => sum + file.measurements.duplicatedLines, 0) : null;
+  const nested = node.units.filter(unit => unit.measurements?.maxNestingDepth != null);
+  node.maxNestingDepth = nested.length ? nested.reduce((maximum, unit) => Math.max(maximum, unit.measurements.maxNestingDepth), 0) : null;
+  node.fileCustom = selectedFiles.flatMap(file => Object.entries(file.measurements?.custom ?? {}).map(([id, value]) => ({ file: file.path, id, value })));
 }
 
 export function buildTree(report) {

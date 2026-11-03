@@ -679,3 +679,15 @@ labels on bins keep dark ink. */
     --button-ink:#fff
   }
 }
+
+.evidence-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; margin-top:24px; }
+.evidence-card { background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:24px; overflow-wrap:anywhere; }
+.evidence-card h3 { font-size:18px; font-weight:550; margin:0 0 12px; }
+.evidence-card p,.pass-list { color:var(--muted); font-size:12px; line-height:1.8; }
+.pass-list { list-style:none; padding:0; }
+.pass-list li,.evidence-item { padding:12px 0; border-top:1px solid var(--line); }
+.pass-list strong { color:var(--ink); }
+.pass-list code { font-size:11px; }
+.evidence-item button { background:none; border:0; padding:0; color:var(--teal); text-decoration:underline; text-align:left; font-size:12px; }
+.dependency-edge { font-family:ui-monospace,SFMono-Regular,monospace; }
+@media(max-width:760px) { .evidence-grid { grid-template-columns:1fr; } }

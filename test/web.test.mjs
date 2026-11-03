@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildTree, filterTree } from '../src/web/tree.js';
 import { regionColor, legendEntries } from '../src/web/metrics.js';
+import { findingLocations } from '../src/web/evidence-view.js';
 
 function fixtureFile(path, complexity, coverage, findings) {
   return { path, coverage, findings, units: [{ id: path + ':fn', name: 'work', file: path,
@@ -34,4 +35,13 @@ test('coverage boundaries and lint colors agree with legends', () => {
   assert.equal(regionColor({ lintKnown: 1, findings: [{ severity: 1 }] }, 'lint', [6, 10, 25]), '#e1bd68');
   assert.equal(regionColor({ lintKnown: 0 }, 'lint', [6, 10, 25]), '#c6cec9');
   assert.equal(legendEntries('complexity', [6, 10, 25])[2][1], 'CCN 10–24');
+});
+
+test('lint messages at one location remain inspectable without creating independent quality penalties', () => {
+  const groups = findingLocations({ files: [{ path: 'file.ts', findings: [
+    { rule: 'one', severity: 1, line: 3, column: 2 },
+    { rule: 'two', severity: 2, line: 3, column: 2 },
+  ] }] });
+  assert.equal(groups.size, 1);
+  assert.equal([...groups.values()][0].messages.length, 2);
 });

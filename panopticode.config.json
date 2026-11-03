@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "lint": {
+    "mode": "baseline",
+    "typed": true
+  },
+  "duplication": {
+    "enabled": true,
+    "minLines": 5,
+    "minTokens": 50
+  },
+  "coverage": {
+    "command": [
+      "npm",
+      "run",
+      "test:coverage"
+    ],
+    "report": "reports/self/coverage/coverage-final.json",
+    "timeoutMs": 300000
+  }
+}

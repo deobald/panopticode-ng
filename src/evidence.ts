@@ -20,16 +20,19 @@ export function readJson(filename: string): unknown {
 }
 
 function fileKey(root: string, filename: string): string {
-  return path.relative(root, path.resolve(root, filename)).split(path.sep).join('/');
+  const resolved = path.resolve(root, filename);
+  const physical = fs.existsSync(resolved) ? fs.realpathSync(resolved) : resolved;
+  return path.relative(root, physical).split(path.sep).join('/');
 }
 
 export function importRecords<T extends { path: string }>(report: Report, records: T[], root: string,
   label: string, apply: (file: FileResult, entry: T) => void): void {
   const files = new Map(report.files.map(file => [file.path, file]));
+  const canonicalRoot = fs.realpathSync(root);
   const matched = new Set<string>();
   let unmatched = 0;
   for (const entry of records) {
-    const file = files.get(fileKey(root, entry.path));
+    const file = files.get(fileKey(canonicalRoot, entry.path));
     if (!file) { unmatched++; continue; }
     if (matched.has(file.path)) throw new Error(`Duplicate ${label} entry for ${file.path}`);
     matched.add(file.path);

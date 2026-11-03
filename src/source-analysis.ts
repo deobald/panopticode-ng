@@ -2,6 +2,8 @@ import { Node, Project, ScriptTarget, type SourceFile } from 'ts-morph';
 import type { FileResult, Unit } from './model.js';
 import { executableFunction, functionName, isDeclared, isDecision, isStatement, isTypeOnly, type ExecutableFunction } from './syntax.js';
 import { diagnosticText } from './discovery.js';
+import { classStructures, fileLines, nestingDepth, unitMeasurements } from './measurements.js';
+import { customValues, type CustomMetric } from './custom-metrics.js';
 
 export function parsingProject(): Project {
   return new Project({ useInMemoryFileSystem: true, skipLoadingLibFiles: true,
@@ -10,7 +12,7 @@ export function parsingProject(): Project {
 
 class SourceAnalysis {
   private readonly units: Unit[] = [];
-  constructor(private readonly source: SourceFile, private readonly file: string) {}
+  constructor(private readonly source: SourceFile, private readonly file: string, private readonly metrics: CustomMetric[]) {}
 
   run(): FileResult {
     const diagnostics = this.source.getProject().getProgram().getSyntacticDiagnostics(this.source);
@@ -20,7 +22,10 @@ class SourceAnalysis {
     this.finish(moduleUnit);
     if (moduleUnit.statements > 0) this.units.unshift(moduleUnit);
     if (!this.units.length) this.units.push(this.unit(this.source, '(declarations only)', 'declarations'));
-    return { path: this.file, units: this.units, coverage: null, findings: null };
+    return { path: this.file, units: this.units, coverage: null, findings: null,
+      classes: classStructures(this.source, this.file, this.metrics),
+      measurements: { physicalLines: fileLines(this.source), duplicatedLines: null,
+        custom: customValues(this.metrics, this.source, 'file', this.file) } };
   }
 
   private unit(node: Node, name: string, kind: Unit['kind']): Unit {
@@ -28,7 +33,8 @@ class SourceAnalysis {
     const end = this.source.getLineAndColumnAtPos(Math.max(node.getStart(), node.getEnd() - 1));
     return { id: `${this.file}:${node.getStart()}:${kind}`, name, kind, file: this.file,
       line: start.line, column: start.column, endLine: end.line,
-      statements: 0, complexity: kind === 'declarations' ? null : 1, statementLines: [], coverage: null };
+      statements: 0, complexity: kind === 'declarations' ? null : 1, statementLines: [], coverage: null,
+      measurements: unitMeasurements(node, kind !== 'declarations', this.metrics, this.file) };
   }
 
   private addStatement(node: Node, owner: Unit): void {
@@ -40,12 +46,14 @@ class SourceAnalysis {
     owner.statementLines = [...new Set(owner.statementLines)].sort((a, b) => a - b);
   }
 
-  private visit(node: Node, owner: Unit): void {
+  private visit(node: Node, owner: Unit, depth = 0): void {
     if (isDeclared(node)) return;
     if (executableFunction(node)) { this.visitFunction(node, owner); return; }
     if (isTypeOnly(node)) return;
     this.measure(node, owner);
-    node.forEachChild(child => { this.visit(child, owner); });
+    const childDepth = nestingDepth(node, depth);
+    owner.measurements.maxNestingDepth = Math.max(owner.measurements.maxNestingDepth ?? 0, childDepth);
+    node.forEachChild(child => { this.visit(child, owner, childDepth); });
   }
 
   private measure(node: Node, owner: Unit): void {
@@ -77,8 +85,8 @@ class SourceAnalysis {
   }
 }
 
-export function analyzeSourceFile(source: SourceFile, file: string): FileResult {
-  return new SourceAnalysis(source, file).run();
+export function analyzeSourceFile(source: SourceFile, file: string, metrics: CustomMetric[] = []): FileResult {
+  return new SourceAnalysis(source, file, metrics).run();
 }
 
 export function analyzeSource(text: string, file: string): FileResult {

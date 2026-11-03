@@ -16,7 +16,10 @@ function drawSummary(report, root, bands) {
 }
 
 function drawDefinitions(report) {
-  for (const [key, title] of [['size', 'Size gives the map its shape'], ['complexity', 'Complexity describes branching'], ['coverage', 'Coverage needs runtime evidence'], ['lint', 'Lint follows the project’s rules']]) {
+  for (const [key, title] of [['size', 'Size gives the map its shape'], ['complexity', 'Complexity describes branching'],
+    ['coverage', 'Coverage needs runtime evidence'], ['lint', 'Lint follows a recorded policy'],
+    ['nesting', 'Nesting describes control depth'], ['structure', 'Structure describes each entity'],
+    ['duplication', 'Duplication identifies matching code'], ['custom', 'Custom metrics are explicit extensions']]) {
     const node = element('div');
     node.append(element('h3', title), element('p', report.definitions[key]));
     $('definitions').append(node);
@@ -40,7 +43,8 @@ export function drawLegend(state) {
     item.append(swatch(fill), document.createTextNode(label));
     $('legend').append(item);
   }
-  const guides = { complexity: 'Group color = maximum complexity', coverage: 'Group color = known file coverage', lint: 'Color applies to whole files' };
+  const guides = { complexity: 'Group color = maximum complexity', coverage: 'Group color = known file coverage',
+    lint: 'Color applies to whole files', nesting: 'Color = maximum control nesting', duplication: 'Color = unique duplicated lines / physical file lines' };
   $('map-guide').textContent = `Area = source statements · ${guides[state.metric]} · Select to inspect; open groups in the detail panel`;
 }
 

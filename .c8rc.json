@@ -1,0 +1,25 @@
+{
+  "all": true,
+  "src": [
+    "src",
+    "dist"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/web/**/*.js",
+    "dist/**/*.js"
+  ],
+  "exclude": [
+    "dist/web/**"
+  ],
+  "extension": [
+    ".js",
+    ".ts"
+  ],
+  "exclude-after-remap": true,
+  "reporter": [
+    "json",
+    "text-summary"
+  ],
+  "reports-dir": "reports/self/coverage"
+}

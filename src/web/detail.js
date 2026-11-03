@@ -61,6 +61,7 @@ export function drawDetail(state, zoom) {
   const location = node.unit ? `${node.unit.file}:${node.unit.line}:${node.unit.column}` : node.path ?? 'Whole project';
   panel.append(badge, element('h3', node.name), element('p', location, 'location'));
   appendDetailMetrics(panel, node);
+  appendStructureDetail(panel, node);
   appendCoverageDetail(panel, node);
   if (node.children.length) {
     panel.append(element('p', `${format(node.units.length)} regions across ${format(node.filePaths.length)} files. Group complexity shows the most complex region.`));
@@ -68,4 +69,29 @@ export function drawDetail(state, zoom) {
   }
   appendComplexityTip(panel, node, state.bands);
   appendLintDetail(panel, node);
+}
+
+function appendStructureDetail(panel, node) {
+  panel.append(element('h4', 'Measurements · independent of lint thresholds'));
+  if (node.unit?.measurements) {
+    const value = node.unit.measurements;
+    panel.append(element('p', `${value.physicalLines} physical lines · ${value.parameterCount ?? 'no'} parameters · maximum nesting ${value.maxNestingDepth ?? 'N/A'}`));
+    for (const [id, measurement] of Object.entries(value.custom)) panel.append(element('p', `${id}: ${measurement}`));
+  }
+  panel.append(element('p', `File scope: ${node.classes.length} classes · ${node.duplicatedLines ?? 'unknown'} duplicated lines.`));
+  for (const value of node.fileCustom) panel.append(element('p', `${value.file} · ${value.id}: ${value.value}`));
+  for (const value of node.classes.slice(0, 12)) {
+    appendClassStructure(panel, value);
+  }
+}
+
+function appendClassStructure(panel, value) {
+  panel.append(element('p', `${value.name} (${value.file}:${value.line}): ${value.methods} methods, ${value.properties} properties, ${value.constructors} constructors, ${value.getters + value.setters} accessors.`));
+  if (value.extends) panel.append(element('p', `Extends ${value.extends}`));
+  if (value.implements.length) panel.append(element('p', `Implements ${value.implements.join(', ')}`));
+  appendCustomClassMetrics(panel, value);
+}
+
+function appendCustomClassMetrics(panel, value) {
+  for (const [id, measurement] of Object.entries(value.custom)) panel.append(element('p', `${value.name} · ${id}: ${measurement}`));
 }

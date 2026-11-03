@@ -1,6 +1,7 @@
 import path from 'node:path';
 import type { Coverage, Report } from './model.js';
 import { importRecords, integer, readJson, record } from './evidence.js';
+import { importedPass } from './provenance.js';
 
 function summarize(lines: Iterable<number>): Coverage | null {
   const values = [...lines];
@@ -32,4 +33,5 @@ export function importCoverage(report: Report, filename: string, projectRoot: st
     }
   });
   report.inputs.coverage = path.basename(filename);
+  importedPass(report, 'istanbul-coverage', path.basename(filename), report.files.filter(file => file.coverage !== null).length);
 }
