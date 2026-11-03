@@ -1,7 +1,7 @@
 // Optional smoke check using an installed Chromium browser and the DevTools pipe.
 // No browser automation package is required or added to the project.
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -56,6 +56,7 @@ try {
   await command('Runtime.enable');
   await command('Network.enable');
   await command('Page.enable');
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'light' }] });
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
   const filename = path.resolve(process.argv[2] ?? 'reports/demo/report.html');
   await command('Page.navigate', { url: pathToFileURL(filename).href });
@@ -94,14 +95,46 @@ try {
   mkdirSync('reports/demo', { recursive: true });
   const desktop = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
   writeFileSync('reports/demo/desktop.png', Buffer.from(desktop.data, 'base64'));
+  const selectedBeforeThemeChange = await evaluate(`document.querySelector('#detail h3').textContent`);
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'dark' }] });
+  assert.equal(await evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(16, 27, 30)');
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('#metric')).backgroundColor`), 'rgb(32, 51, 55)');
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('.tile-group > rect')).fill`), 'rgb(52, 73, 74)');
+  assert.equal(await evaluate(`document.querySelector('#detail h3').textContent`), selectedBeforeThemeChange, 'Theme changes preserve report state');
+  const darkDesktop = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
+  writeFileSync('reports/demo/dark-desktop.png', Buffer.from(darkDesktop.data, 'base64'));
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await evaluate('new Promise(r => setTimeout(r, 150))');
   assert.ok(await evaluate(`document.documentElement.scrollWidth <= 390`), 'Mobile page must not overflow horizontally');
+  const darkMobile = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
+  writeFileSync('reports/demo/dark-mobile.png', Buffer.from(darkMobile.data, 'base64'));
+  await command('Emulation.setEmulatedMedia', { media: 'print', features: [{ name: 'prefers-color-scheme', value: 'dark' }] });
+  assert.equal(await evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(255, 255, 255)');
+  assert.equal(await evaluate(`getComputedStyle(document.documentElement).colorScheme`), 'light');
+  await command('Emulation.setEmulatedMedia', { media: 'screen', features: [{ name: 'prefers-color-scheme', value: 'light' }] });
+  assert.equal(await evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(246, 245, 239)');
   const mobile = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
   writeFileSync('reports/demo/mobile.png', Buffer.from(mobile.data, 'base64'));
+  if (existsSync('reports/self/report.html')) {
+    await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
+    await command('Page.navigate', { url: pathToFileURL(path.resolve('reports/self/report.html')).href });
+    await evaluate(`new Promise((resolve, reject) => {
+      let tries = 0;
+      const timer = setInterval(() => {
+        if (document.querySelector('#treemap svg') && document.querySelector('#project-name')?.textContent === 'panopticode-ts') { clearInterval(timer); resolve(true); }
+        else if (++tries > 80) { clearInterval(timer); reject(new Error('Self report did not render')); }
+      }, 50);
+    })`);
+    assert.equal(await evaluate(`document.querySelectorAll('#summary strong')[2].textContent`), '0');
+    for (const theme of ['light', 'dark']) {
+      await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }] });
+      const screenshot = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
+      writeFileSync(`reports/self/${theme}-desktop.png`, Buffer.from(screenshot.data, 'base64'));
+    }
+  }
   assert.deepEqual(errors, [], 'No browser runtime exceptions');
   assert.ok(requests.every(url => url.startsWith('file:') || url.startsWith('data:')), `Unexpected external requests: ${requests}`);
-  console.log('Browser check passed: offline load, all metrics, search, selection, lint details, group navigation, desktop/mobile layout.');
+  console.log('Browser check passed: offline load, all metrics, search, selection, group navigation, live light/dark themes, print, desktop/mobile, self report.');
 } finally {
   for (const item of pending.values()) clearTimeout(item.timer);
   browser.kill();

@@ -22,6 +22,8 @@ npm run demo
 Open `reports/demo/report.html` in a browser. The demo's code, coverage, and
 lint findings are **synthetic fixtures**, intended to demonstrate how the views
 work. Desktop and mobile layouts are supported.
+Reports follow your system's light/dark theme automatically, including changes
+while the report is open. Printing uses the light palette.
 
 Analyze this repository:
 
@@ -134,7 +136,10 @@ The selected tsconfig's `include`, `exclude`, `files`, `extends`, and project
 references drive discovery. Without a local tsconfig, the CLI scans the supplied
 directory. It supports `.ts`, `.tsx`, `.mts`, and `.cts` and skips `.d.ts`,
 `.d.mts`, and `.d.cts` files. Tests are included when the tsconfig includes them.
-Do not expect JavaScript or framework single-file components to be analyzed.
+Projects with `allowJs` also include configured `.js`, `.jsx`, `.mjs`, and `.cjs`
+files under the same metric definitions. This lets the self report inspect the
+browser runtime as well as the TypeScript CLI. Directory fallback scanning
+remains TypeScript-only. Framework single-file components are not supported.
 
 Directories named `node_modules`, `.git`, `dist`, `build`, `coverage`, or `reports`
 are always excluded, as is the chosen output directory. Referenced files outside
@@ -142,9 +147,9 @@ the selected project root are skipped with warnings; choose a common root for a
 monorepo. Invalid TypeScript syntax or malformed imports stop generation with an
 error. Type errors do not prevent syntax analysis.
 
-The only runtime dependency is the TypeScript compiler API, pinned to the 5.9
-minor series for reproducibility. Projects using syntax newer than this parser
-may need a future parser update.
+The runtime uses ts-morph 27 and its TypeScript 5.9 parser. The TypeScript package
+is a development dependency for building Panopticode itself. Projects using
+syntax newer than this parser may need a future parser update.
 
 ## Development
 
@@ -152,6 +157,7 @@ may need a future parser update.
 npm run check     # Type-check the implementation
 npm test          # Build and run the Node test suite
 npm run demo      # Generate the example report
+npm run self      # Analyze all runtime source, including the browser modules
 ```
 
 An optional browser smoke check uses an installed Chrome through its DevTools
@@ -163,12 +169,16 @@ node scripts/browser-check.mjs
 
 Run `npm run demo` first. On systems without Chrome at the default macOS path,
 set `PANOPTICODE_CHROME` to a Chromium executable. The check exercises offline
-loading, metrics, search, navigation, and desktop/mobile rendering, and writes
-screenshots under `reports/demo`.
+loading, metrics, search, navigation, live system-theme changes, print styles,
+and desktop/mobile rendering. It writes screenshots under `reports/demo`, and
+also checks and captures `reports/self` when that report exists.
 
 Analysis and import APIs are exported from `src/index.ts` (built to `dist`), and
 `report.json` carries `schemaVersion: 1`. See [the design notes](docs/design.md)
 for the original project's relevant implementation and the port's scope.
+The [refinement notes](docs/refinements.md) explain the ts-morph evaluation and
+the before/after self-report results. A regression test requires every runtime
+region to stay below complexity 10 with the original thresholds.
 
 MIT licensed. The original Panopticode was created by Julias R. Shaw; this port
 preserves its visual approach with a new TypeScript implementation.

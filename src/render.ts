@@ -7,8 +7,7 @@ function escapeHtml(value: string): string {
 
 export function renderHtml(report: Report): string {
   const css = fs.readFileSync(new URL('./web/report.css', import.meta.url), 'utf8');
-  const layout = fs.readFileSync(new URL('./web/treemap.js', import.meta.url), 'utf8').replace('export function partition', 'function partition');
-  const script = layout + '\n' + fs.readFileSync(new URL('./web/report.js', import.meta.url), 'utf8');
+  const script = fs.readFileSync(new URL('./web/report.js', import.meta.url), 'utf8');
   // Data is untrusted: file names and lint messages can contain closing script tags.
   const json = JSON.stringify(report).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   return `<!doctype html>

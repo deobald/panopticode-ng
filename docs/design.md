@@ -45,8 +45,8 @@ their results into a common model before visualization.
 
 ## Agreed tool choices
 
-Use the TypeScript compiler API for parsing TS and TSX, project configuration,
-and syntax traversal. Import existing ESLint JSON results to display file-level
+Use ts-morph for parsing and traversing source, with its exported TypeScript
+compiler API for project configuration. Import existing ESLint JSON results to display file-level
 findings and rule details. Do not bundle or run ESLint/typescript-eslint or
 choose new lint rules. Import existing Istanbul coverage JSON rather than
 installing a test or coverage runner into the analyzed project.
@@ -55,3 +55,8 @@ Additional quality metrics require discussion before implementation. The first
 version focuses on the original size, cyclomatic complexity, and coverage ideas.
 No aggregate health score is proposed: the report should expose the evidence
 and metric definitions directly.
+
+The report follows the system light/dark theme through CSS, including SVG group
+colors and controls. Print styles use light mode. The self report includes the
+browser JavaScript via tsconfig `allowJs`; see [refinements](refinements.md) for
+the analysis and refactoring evidence.

@@ -1,0 +1,233 @@
+[
+  {
+    "path": "src/api/checkout.ts",
+    "units": [
+      {
+        "id": "src/api/checkout.ts:321:function",
+        "name": "validateCheckout",
+        "kind": "function",
+        "file": "src/api/checkout.ts",
+        "line": 14,
+        "column": 1,
+        "endLine": 30,
+        "statements": 25,
+        "complexity": 23,
+        "statementLines": [
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          25,
+          26,
+          27,
+          28,
+          29
+        ],
+        "coverage": {
+          "total": 12,
+          "covered": 5
+        }
+      },
+      {
+        "id": "src/api/checkout.ts:1325:function",
+        "name": "submit",
+        "kind": "function",
+        "file": "src/api/checkout.ts",
+        "line": 32,
+        "column": 1,
+        "endLine": 41,
+        "statements": 8,
+        "complexity": 5,
+        "statementLines": [
+          33,
+          34,
+          35,
+          36,
+          38,
+          39
+        ],
+        "coverage": null
+      }
+    ],
+    "coverage": {
+      "total": 14,
+      "covered": 6
+    },
+    "findings": [
+      {
+        "rule": "complexity",
+        "severity": 1,
+        "message": "Demonstration finding: validateCheckout has many decision points.",
+        "line": 15,
+        "column": 8
+      }
+    ]
+  },
+  {
+    "path": "src/domain/cart.ts",
+    "units": [
+      {
+        "id": "src/domain/cart.ts:59:function",
+        "name": "subtotal",
+        "kind": "function",
+        "file": "src/domain/cart.ts",
+        "line": 3,
+        "column": 1,
+        "endLine": 5,
+        "statements": 1,
+        "complexity": 1,
+        "statementLines": [
+          4
+        ],
+        "coverage": {
+          "total": 1,
+          "covered": 1
+        }
+      },
+      {
+        "id": "src/domain/cart.ts:131:function",
+        "name": "items.reduce callback",
+        "kind": "function",
+        "file": "src/domain/cart.ts",
+        "line": 4,
+        "column": 23,
+        "endLine": 4,
+        "statements": 1,
+        "complexity": 1,
+        "statementLines": [
+          4
+        ],
+        "coverage": {
+          "total": 1,
+          "covered": 1
+        }
+      },
+      {
+        "id": "src/domain/cart.ts:191:function",
+        "name": "discount",
+        "kind": "function",
+        "file": "src/domain/cart.ts",
+        "line": 7,
+        "column": 1,
+        "endLine": 11,
+        "statements": 5,
+        "complexity": 4,
+        "statementLines": [
+          8,
+          9,
+          10
+        ],
+        "coverage": {
+          "total": 3,
+          "covered": 3
+        }
+      },
+      {
+        "id": "src/domain/cart.ts:383:function",
+        "name": "shipping",
+        "kind": "function",
+        "file": "src/domain/cart.ts",
+        "line": 13,
+        "column": 1,
+        "endLine": 20,
+        "statements": 6,
+        "complexity": 8,
+        "statementLines": [
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        "coverage": {
+          "total": 5,
+          "covered": 3
+        }
+      }
+    ],
+    "coverage": {
+      "total": 9,
+      "covered": 7
+    },
+    "findings": []
+  },
+  {
+    "path": "src/domain/types.ts",
+    "units": [
+      {
+        "id": "src/domain/types.ts:0:declarations",
+        "name": "(declarations only)",
+        "kind": "declarations",
+        "file": "src/domain/types.ts",
+        "line": 1,
+        "column": 1,
+        "endLine": 6,
+        "statements": 0,
+        "complexity": null,
+        "statementLines": [],
+        "coverage": null
+      }
+    ],
+    "coverage": null,
+    "findings": null
+  },
+  {
+    "path": "src/ui/status.tsx",
+    "units": [
+      {
+        "id": "src/ui/status.tsx:86:module",
+        "name": "(module-level code)",
+        "kind": "module",
+        "file": "src/ui/status.tsx",
+        "line": 2,
+        "column": 1,
+        "endLine": 11,
+        "statements": 2,
+        "complexity": 1,
+        "statementLines": [
+          6,
+          11
+        ],
+        "coverage": null
+      },
+      {
+        "id": "src/ui/status.tsx:218:function",
+        "name": "Status",
+        "kind": "function",
+        "file": "src/ui/status.tsx",
+        "line": 6,
+        "column": 23,
+        "endLine": 9,
+        "statements": 3,
+        "complexity": 3,
+        "statementLines": [
+          7,
+          8
+        ],
+        "coverage": null
+      },
+      {
+        "id": "src/ui/status.tsx:424:function",
+        "name": "formatReference",
+        "kind": "function",
+        "file": "src/ui/status.tsx",
+        "line": 11,
+        "column": 32,
+        "endLine": 11,
+        "statements": 1,
+        "complexity": 1,
+        "statementLines": [
+          11
+        ],
+        "coverage": null
+      }
+    ],
+    "coverage": null,
+    "findings": []
+  }
+]
