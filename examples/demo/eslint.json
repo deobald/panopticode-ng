@@ -1,0 +1,10 @@
+[
+  {
+    "filePath": "src/api/checkout.ts",
+    "messages": [
+      { "ruleId": "complexity", "severity": 1, "message": "Demonstration finding: validateCheckout has many decision points.", "line": 15, "column": 8 }
+    ]
+  },
+  { "filePath": "src/domain/cart.ts", "messages": [] },
+  { "filePath": "src/ui/status.tsx", "messages": [] }
+]
