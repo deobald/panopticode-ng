@@ -24,7 +24,7 @@ References: [ts-morph navigation](https://ts-morph.com/navigation/),
 [compiler interoperability](https://ts-morph.com/navigation/compiler-nodes),
 [version 27 package](https://github.com/dsherret/ts-morph/blob/27.0.2/packages/ts-morph/package.json).
 
-## Self-report findings
+## First refinement self-report snapshot
 
 The initial report covered six TypeScript files and missed the browser's two
 JavaScript files. The complete baseline uses the original analyzer to inspect
@@ -39,8 +39,11 @@ those browser files under the same metrics. The project's tsconfig now enables
 
 Thresholds remain 6, 10, and 25, and the counting rules are unchanged. Neither
 source exclusions nor a looser definition is used to improve the result.
-These results concern complexity and size; coverage and lint evidence remain
-unknown unless supplied. A clean complexity map does not establish correctness.
+These historical results concern complexity and size. At that stage coverage
+and lint evidence remained unknown unless supplied. The later integrated
+pipeline runs lint and duplication by default, and `npm run self` generates
+test coverage too. See [analyzers](analyzers.md) for current behavior. A clean
+complexity map does not establish correctness.
 
 Refactoring separates project discovery, source traversal, syntax classification,
 evidence validation, coverage import, and lint import. The browser separates tree

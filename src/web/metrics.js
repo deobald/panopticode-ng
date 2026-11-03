@@ -25,18 +25,36 @@ function lintColor(node) {
 export function regionColor(node, metric, bands) {
   if (metric === 'complexity') return complexityColor(node.complexity, bands);
   if (metric === 'coverage') return coverageColor(node);
+  if (metric === 'nesting') return node.maxNestingDepth === null ? unknown : colors[[3, 5, 7].filter(value => node.maxNestingDepth >= value).length];
+  if (metric === 'duplication') return duplicationColor(node);
   return lintColor(node);
 }
 
+function duplicationColor(node) {
+  if (node.duplicatedLines === null || !node.physicalLines) return unknown;
+  const fraction = node.duplicatedLines / node.physicalLines;
+  if (fraction === 0) return colors[0];
+  if (fraction < .1) return colors[1];
+  return fraction < .25 ? colors[2] : colors[3];
+}
+
+const metricDescriptions = {
+  complexity: node => `${node.unit ? 'Complexity' : 'Maximum complexity'}: ${node.complexity ?? 'unknown'}`,
+  coverage: node => `Measured line coverage: ${percent(node.coverage)}`,
+  nesting: node => `Maximum nesting: ${node.maxNestingDepth ?? 'unknown'}`,
+  duplication: node => `Duplicated lines in file scope: ${node.duplicatedLines ?? 'unknown'}`,
+  lint: node => `Lint findings in file${node.filePaths.length > 1 ? 's' : ''}: ${node.lintKnown ? node.findings.length : 'unknown'}`,
+};
+
 export function metricText(node, metric) {
-  if (metric === 'complexity') return `${node.unit ? 'Complexity' : 'Maximum complexity'}: ${node.complexity ?? 'unknown'}`;
-  if (metric === 'coverage') return `Measured line coverage: ${percent(node.coverage)}`;
-  return `Lint findings in file${node.filePaths.length > 1 ? 's' : ''}: ${node.lintKnown ? node.findings.length : 'unknown'}`;
+  return metricDescriptions[metric](node);
 }
 
 export function legendEntries(metric, bands) {
   const labels = [`1–${bands[0] - 1}`, `${bands[0]}–${bands[1] - 1}`, `${bands[1]}–${bands[2] - 1}`, `${bands[2]}+`];
   if (metric === 'complexity') return labels.map((label, i) => [colors[i], `CCN ${label}`]);
   if (metric === 'coverage') return colors.map((color, i) => [color, ['75–100%', '50–<75%', '>0–<50%', '0%'][i]]);
+  if (metric === 'nesting') return colors.map((color, i) => [color, ['Depth 0–2', 'Depth 3–4', 'Depth 5–6', 'Depth 7+'][i]]);
+  if (metric === 'duplication') return colors.map((color, i) => [color, ['0%', '>0–<10%', '10–<25%', '25%+'][i]]);
   return [[colors[0], 'No reported findings'], [colors[1], 'Warnings'], [colors[2], 'Errors']];
 }

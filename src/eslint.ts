@@ -1,6 +1,7 @@
 import path from 'node:path';
 import type { Finding, Report } from './model.js';
 import { importRecords, integer, readJson, record } from './evidence.js';
+import { importedPass } from './provenance.js';
 
 function optionalLocation(value: unknown, label: string): number | null {
   return value == null ? null : integer(value, label, 1);
@@ -30,4 +31,5 @@ export function importEslint(report: Report, filename: string, projectRoot: stri
   if (!Array.isArray(data)) throw new Error('ESLint JSON must be an array from eslint --format json.');
   importRecords(report, data.map(eslintEntry), projectRoot, 'ESLint', (file, entry) => { file.findings = entry.findings; });
   report.inputs.eslint = path.basename(filename);
+  importedPass(report, 'eslint', path.basename(filename), report.files.filter(file => file.findings !== null).length);
 }

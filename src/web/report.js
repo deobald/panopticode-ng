@@ -4,6 +4,7 @@ import { drawDetail } from './detail.js';
 import { drawMap } from './map.js';
 import { drawInventory } from './inventory.js';
 import { drawIntroduction, drawLegend, drawBreadcrumbs } from './chrome.js';
+import { drawEvidence } from './evidence-view.js';
 
 function startReport(report) {
   const { root, byId } = buildTree(report);
@@ -48,6 +49,7 @@ function startReport(report) {
   $('more').addEventListener('click', () => { state.limit += 100; drawInventory(state, choose); });
   new ResizeObserver(debounce(() => drawMap(state, { choose, zoom }), 50)).observe($('treemap'));
   drawIntroduction(report, state);
+  drawEvidence(report, file => { choose(byId.get(`path:${file}`)); $('detail').scrollIntoView({ block: 'nearest' }); });
   draw();
 }
 

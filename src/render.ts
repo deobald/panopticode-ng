@@ -21,7 +21,7 @@ export function renderHtml(report: Report): string {
 <div id="warnings" role="status"></div>
 <section id="summary" class="summary" aria-label="Project summary"></section>
 <section class="workspace">
-<div class="map-panel"><div class="panel-heading"><div><p class="eyebrow">01 / EXPLORE THE CODEBASE</p><h2>Where does the complexity live?</h2></div><label class="metric-label">Color by <select id="metric"><option value="complexity">Cyclomatic complexity</option><option value="coverage">Line coverage</option><option value="lint">Lint findings by file</option></select></label></div>
+<div class="map-panel"><div class="panel-heading"><div><p class="eyebrow">01 / EXPLORE THE CODEBASE</p><h2>Where does the complexity live?</h2></div><label class="metric-label">Color by <select id="metric"><option value="complexity">Cyclomatic complexity</option><option value="coverage">Line coverage</option><option value="lint">Lint findings by file</option><option value="nesting">Control nesting</option><option value="duplication">Duplicated lines by file</option></select></label></div>
 <div class="toolbar"><nav id="breadcrumbs" aria-label="Code hierarchy"></nav><label class="search"><span class="sr-only">Find a file or function</span><input id="search" type="search" placeholder="Find a file or function…"></label></div>
 <div id="legend" class="legend" aria-label="Color legend"></div>
 <p class="map-guide" id="map-guide">Area = source statements · Select a region to inspect · Double-click a group to zoom</p>
@@ -31,6 +31,7 @@ export function renderHtml(report: Report): string {
 </section>
 <section class="inventory"><div class="panel-heading"><div><p class="eyebrow">02 / FOLLOW THE EVIDENCE</p><h2 id="inventory-title">Functions &amp; module code</h2></div><label>Order by <select id="sort"><option value="complexity">Highest complexity</option><option value="statements">Largest size</option><option value="coverage">Lowest coverage</option><option value="name">Source location</option></select></label></div>
 <div class="table-scroll"><table><thead><tr><th scope="col">Function / region</th><th scope="col">Source</th><th scope="col">Statements</th><th scope="col">Complexity</th><th scope="col">Line coverage</th></tr></thead><tbody id="inventory"></tbody></table></div><button id="more" class="more" hidden>Show more regions</button></section>
+<section id="evidence" class="evidence-grid" aria-label="Analyzer evidence"></section>
 <section class="methodology"><p class="eyebrow">03 / READ THE MAP</p><h2>Evidence, with its limits in view.</h2><div id="definitions" class="definitions"></div></section>
 <footer><span>Panopticode TS · Inspired by Panopticode’s original code health treemaps.</span><span>Generated locally. Works offline.</span></footer>
 </main><noscript>This interactive report requires JavaScript. The accompanying report.json contains all analysis data.</noscript>
