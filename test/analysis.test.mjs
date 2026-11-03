@@ -94,3 +94,33 @@ test('directory fallback includes mts/cts/tsx and excludes generated directories
     assert.throws(() => analyze({ project: root, thresholds: [10, 6, 25] }), /thresholds/);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+test('allowJs projects include their JavaScript runtime code in the same analysis', () => {
+  const root = mkdtempSync(path.join(tmpdir(), 'panopticode-js-'));
+  try {
+    writeFileSync(path.join(root, 'tsconfig.json'), JSON.stringify({ compilerOptions: { allowJs: true }, include: ['*.ts', '*.js'] }));
+    writeFileSync(path.join(root, 'main.ts'), 'export const inc = (x: number) => x + 1;');
+    writeFileSync(path.join(root, 'view.js'), 'export function view(flag) { if (flag) return 1; return 0; }');
+    const report = analyze({ project: root });
+    const view = report.files.find(file => file.path === 'view.js');
+    assert.equal(view.units[0].complexity, 2);
+    assert.equal(report.files.length, 2);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('computed names and decorators belong to the definition context', () => {
+  const file = analyzeSource(`const flag = true; class Named {
+    @wrap(enabled ? fast : slow)
+    [flag ? 'yes' : 'no'](value = 1) { return value; }
+  }`, 'computed.ts');
+  assert.equal(file.units.find(unit => unit.kind === 'module').complexity, 3);
+  assert.equal(file.units.find(unit => unit.kind === 'function').complexity, 2);
+});
+
+test('project source, including browser code, has no complexity 10+ hotspots', () => {
+  const report = analyze({ project: path.resolve('.') });
+  assert.deepEqual(report.thresholds, [6, 10, 25]);
+  assert.ok(report.files.some(file => file.path === 'src/web/map.js'), 'Browser runtime must be analyzed');
+  const hotspots = report.files.flatMap(file => file.units).filter(unit => unit.complexity >= 10);
+  assert.deepEqual(hotspots.map(unit => `${unit.file}:${unit.line} ${unit.name} = ${unit.complexity}`), []);
+});

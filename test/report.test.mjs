@@ -21,6 +21,14 @@ test('imports distinguish missing, zero, and measured coverage and lint', () => 
   assert.equal(report.files.find(file => file.path.endsWith('checkout.ts')).findings[0].rule, 'complexity');
 });
 
+test('ts-morph preserves the original demo analysis, coverage, and lint results', () => {
+  const report = analyze({ project: demo });
+  importCoverage(report, path.join(demo, 'coverage.json'), demo);
+  importEslint(report, path.join(demo, 'eslint.json'), demo);
+  const expected = JSON.parse(readFileSync(new URL('./fixtures/demo-analysis.json', import.meta.url), 'utf8'));
+  assert.deepEqual(report.files, expected);
+});
+
 test('coverage uses the maximum hit count for statements on the same line', () => {
   const root = mkdtempSync(path.join(tmpdir(), 'panopticode-import-'));
   try {
