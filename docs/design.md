@@ -1,72 +1,70 @@
-# Panopticode for TypeScript
+# Panopticode NG architecture
 
-## Intent
+## Purpose
 
-Explain where a codebase is large, complicated, or insufficiently tested through
-interactive visualizations. Generate an offline HTML report and reusable JSON
-from a CLI. No hosted service is required.
+Provide clear visual explanations of codebase health across TypeScript, C#, and
+PHP. Preserve the original Panopticode idea: a codebase has a navigable hierarchy,
+measurements determine the shape and color of its visualization, and findings
+lead to precise source locations.
 
-## Evidence from the original
+The TypeScript implementation currently provides the working analyzer, report
+model, and offline HTML visualization. C# and PHP support is planned; this
+repository reorganization does not implement either analyzer.
 
-The original clone at `../panopticode` contains documentation, Java reporting
-code, sample data, and gallery images. The most relevant references are:
+## Repository structure
 
-- `website/trunk/documentation/index.html`: treemap semantics and drill-down.
-- `panopticode-java/trunk/prod/src/org/panopticode/report/treemap/ComplexityTreemap.java`:
-  complexity bands 1–5, 6–9, 10–24, and 25+.
-- The adjacent `CoverageTreemap.java`: coverage bands 75%+, 50%+, above zero,
-  zero, and a separate missing-data category.
-- `sample/sample_graphs/`: working examples of complexity and coverage maps.
+```text
+README.md       Project overview and package entry points
+LICENSE         Project-wide license
+docs/           Cross-language design and documentation
+ts/             TypeScript package and its language-specific documentation
+csharp/         Planned C# package
+php/            Planned PHP package
+```
 
-The original uses non-comment source statements for area and a selected metric
-for color. Project/package/file/class/method structure supplies the hierarchy.
-Clicking a region reveals its metrics and context. Tool integrations normalize
-their results into a common model before visualization.
+Language packages own their manifests, lockfiles, source, tests, examples, tool
+configuration, and generated reports. The `ts` package remains `panopticode-ts`,
+including its CLI name. Commands can run inside that package or be delegated
+from the root with `npm --prefix ts ...`.
 
-## First implementation
+Build and dependency management stay native to each language. The monorepo does
+not impose npm on the C# or PHP packages or require one package's toolchain to
+build another. Changes affecting a shared contract should run validation for
+every implemented consumer.
 
-- A CLI accepts a TypeScript project and writes HTML plus versioned JSON.
-- A treemap groups directories, files, and executable functions. Methods,
-  constructors, accessors, arrows, and callbacks are included.
-- Area represents source statement count; color represents cyclomatic
-  complexity. Both definitions must be documented for TypeScript, rather than
-  claiming numerical equivalence to JavaNCSS.
-- Nested functions have independent complexity; their branches do not inflate
-  the enclosing function. Executable module-level code is represented explicitly.
-- Search, directory drill-down, a selectable function list, source locations,
-  legends, and a detail panel make small regions inspectable.
-- Existing coverage reports can supply a separate coverage view. Coverage is
-  observed runtime data, never inferred from static analysis. Missing data is
-  distinct from measured zero coverage.
-- The report embeds all scripts, styles, and data, works from `file://`, and
-  requires no network requests.
-- JSON separates analysis from rendering and leaves room for later adapters and
-  historical snapshots without imposing the original RDF or Ant architecture.
+## Language boundaries
 
-## Agreed tool choices
+Each language analyzer is responsible for project discovery, entity hierarchy,
+source locations, statically inspected measurements, lint integration, coverage
+collection/import, duplication, and relevant project or architecture checks.
+Concrete metrics and third-party tools for C# and PHP need discussion before
+implementation, just as they did for TypeScript.
 
-Use ts-morph for parsing and traversing source, with its exported TypeScript
-compiler API for project configuration. The CLI bundles ESLint/typescript-eslint,
-selected SonarJS rules, and jscpd core/tokenizer. Lint can use a versioned baseline
-or the project's policy. Existing ESLint and coverage JSON imports remain
-supported. Coverage generation orchestrates a configured project test command;
-the self-report uses the existing Node tests with c8. Knip and dependency-cruiser are bundled too. The CLI runs every pass by default,
-including typed lint and coverage; `--no-*` flags disable selected passes.
-Coverage commands are configured or discovered from package scripts. Imports
-remain available, and failed passes are visible while other passes continue.
+Language-specific configuration and metric definitions belong with the analyzer.
+Identically named metrics can use different counting rules across languages;
+their definitions and analyzer versions must travel with the data. The report
+must expose these differences before encouraging cross-language comparisons.
 
-Additional quality metrics require discussion before implementation. The first
-version began with size, cyclomatic complexity, and coverage; the integrated
-pipeline adds the requested nesting, class structure, custom metric extension,
-and duplication measurements. Each analyzer runs a separate pass and records
-its version and configuration. Measurements and findings remain distinct.
-No aggregate health score is proposed: the report should expose the evidence
-and metric definitions directly.
+## Shared reporting direction
 
-The report follows the system light/dark theme through CSS, including SVG group
-colors and controls. Print styles use light mode. The self report includes the
-browser JavaScript via tsconfig `allowJs`; see [refinements](refinements.md) for
-the analysis and refactoring evidence.
+The existing TypeScript report model is versioned JSON. It keeps entity
+measurements, actionable findings, coverage evidence, duplicate ranges, and
+analyzer provenance distinct. Missing evidence and failed passes are explicit;
+reports do not turn overlapping findings into a combined quality penalty.
 
-See [analyzer configuration](analyzers.md) for the current pipeline, profiles,
-command execution, schema version, and extension interfaces.
+When a second analyzer is implemented, evolve that model into a shared contract
+with language metadata and room for language-specific structures. Extract the
+browser renderer and shared fixtures at that point, using actual consumers to
+define the boundary. Until then, their working implementations stay in `ts/`.
+
+Offline reports should continue to provide directory/file/entity navigation,
+search, accessible detail views, legends, and system light/dark themes. C# and
+PHP analyzers should be able to produce report data through their own toolchains
+without embedding TypeScript source analysis.
+
+## TypeScript implementation
+
+See the [TypeScript port design](../ts/docs/design.md),
+[analyzer configuration](../ts/docs/analyzers.md), and
+[refinement history](../ts/docs/refinements.md) for the implemented behavior and
+its relationship to the original Java project.

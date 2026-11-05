@@ -22,7 +22,7 @@
     "check": "tsc --noEmit",
     "test": "npm run build && node --test test/*.test.mjs",
     "demo": "npm run build && node dist/cli.js examples/demo --out reports/demo --coverage examples/demo/coverage.json --eslint examples/demo/eslint.json",
-    "self": "npm run build && node dist/cli.js . --out reports/self",
+    "self": "npm run build && node dist/cli.js . --name panopticode-ts --out reports/self",
     "lint": "npm run build && eslint src",
     "test:coverage": "c8 node --test test/*.test.mjs"
   },
