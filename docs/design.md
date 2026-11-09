@@ -7,9 +7,9 @@ PHP. Preserve the original Panopticode idea: a codebase has a navigable hierarch
 measurements determine the shape and color of its visualization, and findings
 lead to precise source locations.
 
-The TypeScript implementation currently provides the working analyzer, report
-model, and offline HTML visualization. C# and PHP support is planned; this
-repository reorganization does not implement either analyzer.
+The TypeScript implementation provides the interactive analyzer and report.
+PHP provides a native CLI with PDepend, PHPStan, unused-member analysis,
+coverage and duplication, plus a simple offline report. C# remains planned.
 
 ## Repository structure
 
@@ -19,7 +19,7 @@ LICENSE         Project-wide license
 docs/           Cross-language design and documentation
 ts/             TypeScript package and its language-specific documentation
 csharp/         Planned C# package
-php/            Planned PHP package
+php/            PHP health and retirement analysis CLI
 ```
 
 Language packages own their manifests, lockfiles, source, tests, examples, tool
@@ -37,8 +37,9 @@ every implemented consumer.
 Each language analyzer is responsible for project discovery, entity hierarchy,
 source locations, statically inspected measurements, lint integration, coverage
 collection/import, duplication, and relevant project or architecture checks.
-Concrete metrics and third-party tools for C# and PHP need discussion before
-implementation, just as they did for TypeScript.
+Concrete metrics and third-party tools need discussion before implementation.
+PHP's selected tools and retirement focus are recorded in ADR-010; C# choices
+remain undecided.
 
 Language-specific configuration and metric definitions belong with the analyzer.
 Identically named metrics can use different counting rules across languages;
@@ -52,7 +53,7 @@ measurements, actionable findings, coverage evidence, duplicate ranges, and
 analyzer provenance distinct. Missing evidence and failed passes are explicit;
 reports do not turn overlapping findings into a combined quality penalty.
 
-When a second analyzer is implemented, evolve that model into a shared contract
+As the PHP report evolves, develop that model into a shared contract
 with language metadata and room for language-specific structures. Extract the
 browser renderer and shared fixtures at that point, using actual consumers to
 define the boundary. Until then, their working implementations stay in `ts/`.

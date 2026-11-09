@@ -1,0 +1,19 @@
+{
+  "name": "panopticode/panopticode-php",
+  "description": "PHP code health and retirement evidence for Panopticode NG",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "ext-dom": "*",
+    "ext-simplexml": "*",
+    "pdepend/pdepend": "3.0.0",
+    "phpstan/phpstan": "^2.2",
+    "shipmonk/dead-code-detector": "^1.4",
+    "symfony/process": "^7.4"
+  },
+  "autoload": { "psr-4": { "Panopticode\\": "src/" } },
+  "bin": ["bin/panopticode-php"],
+  "scripts": { "test": "@php tests/run.php", "self": "@php bin/panopticode-php . --out reports/self" },
+  "config": { "allow-plugins": false, "sort-packages": true, "platform": { "php": "8.2.0" } }
+}

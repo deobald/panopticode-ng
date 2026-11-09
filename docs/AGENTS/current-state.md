@@ -11,11 +11,28 @@ the working checkout. Root docs and MIT license remain shared. A matching
 `ts/LICENSE` is retained for npm distribution. There is no root `package.json`.
 The root folder and remote name are for the user to rename separately.
 
-C# and PHP are planned, not implemented. No empty packages were scaffolded.
-Discuss native analyzers and metrics before implementing them, then use the
-second real consumer to define the shared JSON/rendering boundary. Do not begin
-this work merely because a new session starts; the next concrete task is the
-user's choice.
+PHP now has a native CLI under `php/`; see its README and ADR-010. It runs
+PDepend, PHPStan, ShipMonk unused-member analysis, project coverage execution or
+Clover import, and jscpd. It writes its own version-1 PHP JSON and simple offline
+HTML, without changing TypeScript's schema or renderer. The target PHP codebases
+are being hardened for eventual replacement with TypeScript; no style checks
+or architectural-rule setup are required. C# remains planned.
+
+Install with `composer install --working-dir=php --no-plugins --no-scripts` and
+`npm --prefix php ci --ignore-scripts`. Run
+`mise exec node@24 -- php php/bin/panopticode-php /path/to/app --out php/reports/app`.
+Validate with `mise exec node@24 -- php php/tests/run.php`; PHPStan needs a local
+worker socket. Coverage requires the target's PHPUnit/driver or a configured
+command; unavailable setup fails visibly. See `php/README.md` for imports and
+`--no-*` opt-outs. Do not silently skip coverage or equate unused members with
+safe deletion. User questions about target PHP versions/frameworks and local
+checkout paths are still pending.
+
+PHP validation for this implementation: 37 fixture/integration checks passed.
+The PHP self-report, excluding deliberate demo errors with `--exclude examples`
+and explicitly skipping unavailable runtime coverage with `--no-coverage`, had
+no PHPStan correctness or ShipMonk findings. This is not a claim of measured
+test coverage, absence of duplication, or analysis of the user's applications.
 
 The historical Java checkout was a sibling named `panopticode`: from the root,
 look in `../panopticode`; from `ts/`, `../../panopticode`. Useful original

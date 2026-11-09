@@ -16,14 +16,19 @@ implemented behavior in more detail.
   is not a template for this project.
 - Discuss any additional metric or third-party analysis tool with the user,
   explaining its rationale, before adding it. The existing TypeScript metrics
-  and bundled tools in the ADRs have already been approved. C# and PHP tool
-  choices have not.
+  and bundled tools in the ADRs have already been approved. PHP tool choices
+  are recorded in ADR-010. C# tool choices remain undecided.
 - A normal CLI invocation runs all integrated passes, including typed lint,
   coverage, Knip, and dependency-cruiser. Offer `--no-*` controls. Do not revert
   to opt-in behavior or import-only lint/coverage.
 - Measurements and findings are distinct. Avoid aggregate health scores and
   penalties that double-count overlapping findings. Unknown or failed evidence
   must never look like successful zero findings or zero coverage.
+- Focus on code health and hygiene, not coding standards or style. PHP_CodeSniffer
+  is excluded from PHP tool considerations. The two PHP applications are being
+  hardened for eventual replacement with TypeScript. PDepend, PHPStan, ShipMonk,
+  Clover coverage and jscpd are selected; Deptrac is excluded because it needs
+  architectural rules.
 - Keep reports offline, navigable, understandable, and responsive to the system
   light/dark theme. Use the self-report to guide real refactoring; do not make
   it look healthy by raising thresholds, dropping runtime code, or hiding
