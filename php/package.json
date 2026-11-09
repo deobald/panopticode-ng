@@ -1,0 +1,7 @@
+{
+  "name": "panopticode-php-duplication",
+  "private": true,
+  "description": "Isolated jscpd runner for the PHP CLI",
+  "engines": { "node": ">=22" },
+  "dependencies": { "jscpd": "4.0.5" }
+}
