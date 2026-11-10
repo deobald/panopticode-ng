@@ -2,4 +2,6 @@ node_modules/
 dist/
 reports/
 .DS_Store
+csharp/**/bin/
+csharp/**/obj/
 

@@ -9,7 +9,10 @@ lead to precise source locations.
 
 The TypeScript implementation provides the interactive analyzer and report.
 PHP provides a native CLI with PDepend, PHPStan, unused-member analysis,
-coverage and duplication, plus a simple offline report. C# remains planned.
+coverage and duplication, plus a simple offline report. C# provides a native
+.NET CLI with syntax measurements, semantic correctness/security analysis,
+Microsoft metrics, native token duplication and coverage imports, plus an
+interactive offline report.
 
 ## Repository structure
 
@@ -18,7 +21,7 @@ README.md       Project overview and package entry points
 LICENSE         Project-wide license
 docs/           Cross-language design and documentation
 ts/             TypeScript package and its language-specific documentation
-csharp/         Planned C# package
+csharp/         Native .NET code health and security analysis CLI
 php/            PHP health and retirement analysis CLI
 ```
 
@@ -39,7 +42,7 @@ source locations, statically inspected measurements, lint integration, coverage
 collection/import, duplication, and relevant project or architecture checks.
 Concrete metrics and third-party tools need discussion before implementation.
 PHP's selected tools and retirement focus are recorded in ADR-010; C# choices
-remain undecided.
+and legacy project limitations are recorded in ADR-012.
 
 Language-specific configuration and metric definitions belong with the analyzer.
 Identically named metrics can use different counting rules across languages;
@@ -57,6 +60,9 @@ As the PHP report evolves, develop that model into a shared contract
 with language metadata and room for language-specific structures. Extract the
 browser renderer and shared fixtures at that point, using actual consumers to
 define the boundary. Until then, their working implementations stay in `ts/`.
+C# has its own version-1 JSON contract and interactive renderer. It embeds
+TypeScript's pure treemap partition function as a build resource without
+requiring Node. Shared rendering beyond that function remains future work.
 
 Offline reports should continue to provide directory/file/entity navigation,
 search, accessible detail views, legends, and system light/dark themes. C# and

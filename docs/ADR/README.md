@@ -18,6 +18,7 @@ implementation change occurred.
 | [ADR-009](ADR-009-language-monorepo.md) | Organize language packages in a monorepo | Accepted |
 | [ADR-010](ADR-010-php-retirement-analysis.md) | Analyze PHP for hardening and retirement | Accepted |
 | [ADR-011](ADR-011-language-cli-conventions.md) | Present language CLIs through a common usage pattern | Accepted |
+| [ADR-012](ADR-012-csharp-hardening-analysis.md) | Analyze C# with native .NET tools and explicit legacy limitations | Accepted |
 
 See [ADR-001](ADR-001-we-will-use-adrs.md) for the record format and lifecycle.
 Operational handoff notes live in [docs/AGENTS](../AGENTS/README.md).

@@ -12,7 +12,7 @@ missing or failed evidence shown explicitly and no aggregate health score.
 | --- | --- | --- |
 | TypeScript and configured JavaScript | Implemented | [ts/](ts/README.md) |
 | PHP | Implemented; focused on hardening and eventual retirement | [php/](php/README.md) |
-| C# | Next; tools and entrypoint to be designed | Planned `csharp/` package |
+| C# | Implemented; correctness, security and retirement hardening | [csharp/](csharp/README.md) |
 
 ## Run an analysis
 
@@ -57,6 +57,26 @@ php php/bin/panopticode-php /path/to/project --out reports/php
 Open `reports/php/report.html`. See the [PHP guide](php/README.md) for coverage
 setup, framework considerations, and report controls.
 
+### C#
+
+Requires the .NET 10 SDK. Install and build:
+
+```sh
+dotnet restore csharp/src/Panopticode.CSharp.csproj --locked-mode
+dotnet build csharp/src/Panopticode.CSharp.csproj --no-restore
+```
+
+Analyze:
+
+```sh
+dotnet csharp/src/bin/Debug/net10.0/panopticode-csharp.dll /path/to/project --out reports/csharp
+```
+
+Open `reports/csharp/report.html`. No Node runtime is required. See the
+[C# guide](csharp/README.md) for project selection, security rules, coverage and
+legacy .NET Framework limitations. Syntax and duplication work without a build;
+semantic evidence needs the target's restored dependencies and build environment.
+
 ### Common behavior
 
 All integrated analysis passes run by default. Each package provides report
@@ -77,9 +97,10 @@ its native toolchain; no root build system is required. After installation:
 | --- | --- |
 | TypeScript | `npm --prefix ts test` |
 | PHP | `php php/tests/run.php` |
+| C# | `dotnet run --project csharp/tests/Panopticode.CSharp.Tests.csproj` |
 
-C# will follow the same install, analyze, and inspect flow using its .NET
-toolchain. Its implementation and analyzer choices remain future work.
+C# uses its native .NET toolchain and independent report contract. See its
+package guide for test setup and offline browser checks.
 
 ## Project documentation
 
@@ -88,6 +109,7 @@ toolchain. Its implementation and analyzer choices remain future work.
 - [TypeScript analyzer configuration](ts/docs/analyzers.md)
 - [TypeScript port design](ts/docs/design.md)
 - [PHP CLI, tools, and configuration](php/README.md)
+- [C# CLI, tools, and configuration](csharp/README.md)
 - [Agent guidance and handoff notes](docs/AGENTS/README.md)
 
 New metrics and third-party analyzers should be discussed before implementation.

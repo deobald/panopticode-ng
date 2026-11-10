@@ -17,7 +17,8 @@ implemented behavior in more detail.
 - Discuss any additional metric or third-party analysis tool with the user,
   explaining its rationale, before adding it. The existing TypeScript metrics
   and bundled tools in the ADRs have already been approved. PHP tool choices
-  are recorded in ADR-010. C# tool choices remain undecided.
+  are recorded in ADR-010. C# choices, native duplication and legacy project
+  limitations are recorded in ADR-012; its initial target is Learning Blade.
 - A normal CLI invocation runs all integrated passes, including typed lint,
   coverage, Knip, and dependency-cruiser. Offer `--no-*` controls. Do not revert
   to opt-in behavior or import-only lint/coverage.
@@ -33,6 +34,12 @@ implemented behavior in more detail.
   light/dark theme. Use the self-report to guide real refactoring; do not make
   it look healthy by raising thresholds, dropping runtime code, or hiding
   missing evidence.
+
+## Pending Work: Beans
+
+The `../BEANS/` directory contains implementation ideas. After working on a new
+feature in any given session, update the documentation and then ask about implementing
+the next of these ideas/chores. Mark them as complete when each one is finished.
 
 ## Session boundary
 
